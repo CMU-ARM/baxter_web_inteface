@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="bootstrap.min.css">
+<link rel="stylesheet" href="my.css">
+<title>Baxter Web Control Interface</title>
+</head>
+
+<body>
+<div class="container">
+  <h1>Baxter Web Control Interface</h1><br>
+  <div class="row">
+    <label>Server Address: </label> <input type="text" id="ros-url">
+    <button class='btn' id="connect_btn">Connect</button>
+    <br>
+    <label>Server Connection:</label><span id="server-status" class="label label-default">Unknown</span>
+  </div>
+  <button class="btn btn-primary" id="pause_btn">Pause</button>
+
+  <ul class="nav nav-tabs">
+    <li class="active"><a  href="#1" data-toggle="tab">Status</a></li>
+    <li><a href="#2" data-toggle="tab">End Effector State</a></li>
+    <li><a href="#3" data-toggle="tab">Joint State</a></li>
+  </ul>
+
+  <div class="tab-content ">
+    <div class="tab-pane active" id="1">
+    Robot State: <span id="robot-status" class="label label-default">Unknown</span><br>
+      <button class="btn btn-primary" id="enable_robot_btn">Enable Robot</button>
+    <br>
+    Sonar State: <span id="sonar-status" class="label label-default">Unknown</span><br>
+      <button class="btn btn-primary" id="disable_sonar_btn">Disable</button>
+    </div>
+    <div class="tab-pane" id="3">
+      <div>
+        <div id="joint_state">
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="2">
+      <div class="row">
+        <div class="col-md-6">
+          <h3>Right Hand</h3>
+          <div id="right_hand_state">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h3>Left Hand</h3>
+          <div id="left_hand_state">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript" src="eventemitter2.min.js"></script>
+<script type="text/javascript" src="roslib.min.js"></script>
+<script type="text/javascript" src="bootstrap.min.js"></script>
+<script type="text/javascript" src="app.js"></script>
+<script type="text/javascript" src="display.js"></script>
+</body>
+</html>
