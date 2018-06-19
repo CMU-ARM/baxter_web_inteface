@@ -158,6 +158,7 @@ function initialize(){
     while(node.firstChild){
       node.removeChild(node.firstChild)
     }
+    console.log(posObj)
     node.appendChild(table_obj)
 
     // for(var i = 0; i < msg.name.length; i++){
@@ -172,6 +173,36 @@ function initialize(){
 
   subscribe_to_topic('/robot/limb/right/endpoint_state','baxter_core_msgs/EndpointState',function(msg){
     display_endeffector_info(msg, "right_hand_state")
+  })
+  
+  subscribe_to_topic('/safety','lab_baxter_safety/Safety',function(msg){
+    if(msg && msg.running){
+      document.getElementById('safety-status').className = 'label label-success';
+      document.getElementById('safety-status').innerHTML = 'Running';
+    }
+    else{
+      document.getElementById('safety-status').className = 'label label-danger';
+      document.getElementById('safety-status').innerHTML = 'Disabled'; 
+    }
+    if(msg.kill_flag){
+      document.getElementById('flag-status').className = 'label label-danger';
+      document.getElementById('flag-status').innerHTML = 'Killing';
+    }
+    else{
+      document.getElementById('flag-status').className = 'label label-success';
+      document.getElementById('flag-status').innerHTML = 'Inactive'; 
+    }
+      /*if(!pause){
+            var a = [msg.running]
+            var b = [msg.kill_flag]
+            var posObj = toObject(a, b)
+            var table_obj = makeTableFromObj(posObj,["Safety Node Running?", "Kill Flag Triggered"])
+            node = document.getElementById('safety')
+            while(node.firstChild){
+              node.removeChild(node.firstChild)
+            }
+            node.appendChild(table_obj)
+      }*/
   })
 
   subscribe_to_topic('/robot/state','baxter_core_msgs/AssemblyState',function(msg){

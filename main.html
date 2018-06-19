@@ -22,6 +22,7 @@
     <li class="active"><a  href="#1" data-toggle="tab">Status</a></li>
     <li><a href="#2" data-toggle="tab">End Effector State</a></li>
     <li><a href="#3" data-toggle="tab">Joint State</a></li>
+    <li><a href="#4" data-toggle="tab">Safety State</a></li>
   </ul>
 
   <div class="tab-content ">
@@ -31,7 +32,16 @@
     <br>
     Sonar State: <span id="sonar-status" class="label label-default">Unknown</span><br>
       <button class="btn btn-primary" id="disable_sonar_btn">Disable</button>
+    <br>
     </div>
+    
+    <div class="tab-pane" id="4">
+      <div>
+        Safety Node State: <span id="safety-status" class="label label-default">Unknown</span>
+        Kill Flag: <span id="flag-status" class="label label-default">Unknown</span>
+      </div>
+    </div>
+    
     <div class="tab-pane" id="3">
       <div>
         <div id="joint_state">
