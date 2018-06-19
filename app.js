@@ -144,6 +144,7 @@ function display_endeffector_info(msg,id){
 enable_topic = null;
 robot_status = false;
 sonar_status = true;
+kill_status = false
 sonar_enable_topic = null;
 
 function initialize(){
@@ -158,12 +159,7 @@ function initialize(){
     while(node.firstChild){
       node.removeChild(node.firstChild)
     }
-    console.log(posObj)
     node.appendChild(table_obj)
-
-    // for(var i = 0; i < msg.name.length; i++){
-    //   console.log(msg.name[i] + "" + msg.position[i]);
-    // }
     }
   })
 
@@ -184,25 +180,16 @@ function initialize(){
       document.getElementById('safety-status').className = 'label label-danger';
       document.getElementById('safety-status').innerHTML = 'Disabled'; 
     }
-    if(msg.kill_flag){
+    if(msg.kill_flag || kill_status == true){
       document.getElementById('flag-status').className = 'label label-danger';
       document.getElementById('flag-status').innerHTML = 'Killing';
+      document.getElementById('kill_robot_btn').classList.add("active")
     }
     else{
       document.getElementById('flag-status').className = 'label label-success';
       document.getElementById('flag-status').innerHTML = 'Inactive'; 
+      document.getElementById('kill_robot_btn').classList.remove("active")
     }
-      /*if(!pause){
-            var a = [msg.running]
-            var b = [msg.kill_flag]
-            var posObj = toObject(a, b)
-            var table_obj = makeTableFromObj(posObj,["Safety Node Running?", "Kill Flag Triggered"])
-            node = document.getElementById('safety')
-            while(node.firstChild){
-              node.removeChild(node.firstChild)
-            }
-            node.appendChild(table_obj)
-      }*/
   })
 
   subscribe_to_topic('/robot/state','baxter_core_msgs/AssemblyState',function(msg){
@@ -251,12 +238,22 @@ function initialize(){
     name: "/robot/set_super_enable",
     messageType: "std_msgs/Bool"
   })
+  
+  kill_topic = new ROSLIB.Topic({
+    ros:ros,
+    name: "/robot/set_super_stop",
+    messageType: "std_msgs/Empty"
+  })
+  
+  reset_topic = new ROSLIB.Topic({
+    ros:ros,
+    name: "/robot/set_super_reset",
+    messageType: "std_msgs/Empty"
+  })
 }
 
 function btnClick(event){
     pause = !pause
-    //var type_name = event.target.id.split('_')[0]
-    //publishGesture(type_map[type_name])
 }
 
 function enableBtnClick(event){
@@ -286,10 +283,28 @@ function disableSonarBtnClick(event){
   }
 }
 
+function disableRobotBtnClick(event){
+  msg = {}
+  if(kill_topic){
+    kill_status = true
+    kill_topic.publish(msg)
+  }
+}
+
+function resetRobotBtnClick(event){
+  msg = {}
+  if(reset_topic){
+    kill_status = false
+    reset_topic.publish(msg)
+  }
+}
+
 document.getElementById('pause_btn').addEventListener('click',btnClick);
 document.getElementById('enable_robot_btn').addEventListener('click',enableBtnClick);
+document.getElementById('reset_robot_btn').addEventListener('click',resetRobotBtnClick);
 document.getElementById('disable_sonar_btn').addEventListener('click',disableSonarBtnClick);
 document.getElementById('connect_btn').addEventListener('click',restartConnectClick)
+document.getElementById('kill_robot_btn').addEventListener('click',disableRobotBtnClick)
 
 ros = null
 started = false;
