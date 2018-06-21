@@ -9,7 +9,7 @@ To launch the server, run:
 roslaunch rosbridge_server rosbridge_websocket.launch
 ```
 
-For camera functionality, run in another terminal:
+For camera functionality, first run in another terminal (before above server):
 ```
 rosrun web_video_server web_video_server
 ```
