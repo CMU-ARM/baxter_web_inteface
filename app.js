@@ -116,6 +116,18 @@ function round(value, decimals) {
   return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
 
+//https://stackoverflow.com/questions/5451445/how-to-display-image-with-javascript
+function show_image(src, width, height, alt) {
+    node = document.getElementById("pic")
+    var img = new Image(width, height);
+    img.src = src;
+    img.alt = alt;
+
+    while(node.firstChild){
+      node.removeChild(node.firstChild)
+    }
+    node.appendChild(img)
+}
 
 pause = false
 
@@ -144,10 +156,19 @@ function display_endeffector_info(msg,id){
 enable_topic = null;
 robot_status = false;
 sonar_status = true;
-kill_status = false
 sonar_enable_topic = null;
+head_open = false;
+left_open = false;
+right_open = false;
+bool = false;
+
 
 function initialize(){
+  document.getElementById('safety-status').className = 'label label-danger';
+  document.getElementById('safety-status').innerHTML = 'Disabled';
+  document.getElementById('flag-status').className = 'label label-success';
+  document.getElementById('flag-status').innerHTML = 'Inactive';
+  
   subscribe_to_topic('/robot/joint_states','sensor_msgs/JointState',function(msg){
     if(!pause){
     var posObj = toObject(msg.name, msg.position)
@@ -171,8 +192,8 @@ function initialize(){
     display_endeffector_info(msg, "right_hand_state")
   })
   
-  subscribe_to_topic('/safety','lab_baxter_safety/Safety',function(msg){
-    if(msg && msg.running){
+  subscribe_to_topic('/safety','std_msgs/Bool',function(msg){
+    if(msg && msg.data){
       document.getElementById('safety-status').className = 'label label-success';
       document.getElementById('safety-status').innerHTML = 'Running';
     }
@@ -180,22 +201,12 @@ function initialize(){
       document.getElementById('safety-status').className = 'label label-danger';
       document.getElementById('safety-status').innerHTML = 'Disabled'; 
     }
-    if(msg.kill_flag || kill_status == true){
-      document.getElementById('flag-status').className = 'label label-danger';
-      document.getElementById('flag-status').innerHTML = 'Killing';
-      document.getElementById('kill_robot_btn').classList.add("active")
-    }
-    else{
-      document.getElementById('flag-status').className = 'label label-success';
-      document.getElementById('flag-status').innerHTML = 'Inactive'; 
-      document.getElementById('kill_robot_btn').classList.remove("active")
-    }
   })
 
   subscribe_to_topic('/robot/state','baxter_core_msgs/AssemblyState',function(msg){
     if(msg.enabled){
       document.getElementById('robot-status').className = 'label label-success';
-      document.getElementById('robot-status').innerHTML = 'enabled';
+      document.getElementById('robot-status').innerHTML = 'Enabled';
       document.getElementById('enable_robot_btn').classList.add("active")
       robot_status = true
     }
@@ -209,6 +220,17 @@ function initialize(){
       document.getElementById('robot-status').innerHTML = 'Disabled'; 
       document.getElementById('enable_robot_btn').classList.remove('active')
       robot_status = false
+    }
+    
+    if(msg.estop_button || msg.estop_source){
+      document.getElementById('flag-status').className = 'label label-danger';
+      document.getElementById('flag-status').innerHTML = 'Killing';
+      document.getElementById('kill_robot_btn').classList.add("active")
+    } 
+    else{   
+      document.getElementById('flag-status').className = 'label label-success';
+      document.getElementById('flag-status').innerHTML = 'Inactive'; 
+      document.getElementById('kill_robot_btn').classList.remove("active")
     }
   })
 
@@ -228,28 +250,52 @@ function initialize(){
   })
 
   sonar_enable_topic = new ROSLIB.Topic({
-    ros:ros,
+    ros: ros,
     name: "/robot/sonar/head_sonar/set_sonars_enabled",
     messageType: "std_msgs/UInt16"
   })
 
   enable_topic = new ROSLIB.Topic({
-    ros:ros,
+    ros: ros,
     name: "/robot/set_super_enable",
     messageType: "std_msgs/Bool"
   })
   
   kill_topic = new ROSLIB.Topic({
-    ros:ros,
+    ros: ros,
     name: "/robot/set_super_stop",
     messageType: "std_msgs/Empty"
   })
   
   reset_topic = new ROSLIB.Topic({
-    ros:ros,
+    ros: ros,
     name: "/robot/set_super_reset",
     messageType: "std_msgs/Empty"
   })
+  
+  imageTopic = new ROSLIB.Topic({
+    ros : ros,
+    name : '/camera/image/compressed',
+    messageType : 'sensor_msgs/CompressedImage'
+  });
+  
+  camera_open = new ROSLIB.Service({
+    ros: ros,
+    name: "/cameras/open",
+    messageType: "baxter_core_msgs/OpenCamera"
+  })
+  
+  camera_close = new ROSLIB.Service({
+    ros: ros,
+    name: "/cameras/close",
+    messageType: "baxter_core_msgs/CloseCamera"
+  })
+ 
+  camera_list = new ROSLIB.Service({
+    ros: ros,
+    name: '/cameras/list',
+    serviceType: 'baxter_core_msgs/ListCameras'
+  });
 }
 
 function btnClick(event){
@@ -278,7 +324,6 @@ function disableSonarBtnClick(event){
     msg['data'] = 4095
   }
   if(sonar_enable_topic){
-    console.log(msg)
     sonar_enable_topic.publish(msg)
   }
 }
@@ -286,7 +331,6 @@ function disableSonarBtnClick(event){
 function disableRobotBtnClick(event){
   msg = {}
   if(kill_topic){
-    kill_status = true
     kill_topic.publish(msg)
   }
 }
@@ -294,9 +338,126 @@ function disableRobotBtnClick(event){
 function resetRobotBtnClick(event){
   msg = {}
   if(reset_topic){
-    kill_status = false
     reset_topic.publish(msg)
   }
+}
+
+function showHeadCamClick(event){
+    var head = 'head_camera'
+    var request = new ROSLIB.ServiceRequest({})
+    camera_list.callService(request, function(result) {
+        if(!head_open){
+            if(left_open){
+                var close = new ROSLIB.ServiceRequest({
+                        name: 'right_hand_camera'
+                })
+                camera_close.callService(close, function(result) {right_open = false})
+            }
+            else if(right_open){
+                var close = new ROSLIB.ServiceRequest({
+                        name: 'left_hand_camera'
+                })
+                camera_close.callService(close, function(result) {left_open = false})
+            }
+            else {
+                for (var i = 0, size = result.cameras.length; i < size; i++){
+                    var item = result.cameras[i]
+                    if (item != head){
+                        var close = new ROSLIB.ServiceRequest({
+                            name: item
+                        })
+                        camera_close.callService(close, function(result) {})
+                    }
+                }
+            }
+            var open = new ROSLIB.ServiceRequest({
+                name: head
+            })
+            
+            camera_open.callService(open, function(result) {
+                head_open = true
+            })
+        }
+    }) 
+    window.open('http://localhost:8080/stream_viewer?topic=/cameras/head_camera/image&invert=none', '_blank')
+}
+
+function showLeftCamClick(event){
+    var left = 'left_hand_camera'
+    var request = new ROSLIB.ServiceRequest({})
+    camera_list.callService(request, function(result) {
+        if(!left_open){
+            if(head_open){
+                var close = new ROSLIB.ServiceRequest({
+                        name: 'right_hand_camera'
+                })
+                camera_close.callService(close, function(result) {right_open = false})
+            }
+            else if(right_open){
+                var close = new ROSLIB.ServiceRequest({
+                        name: 'head_camera'
+                })
+                camera_close.callService(close, function(result) {head_open = false})
+            }
+            else{
+                for (var i = 0, size = result.cameras.length; i < size; i++){
+                    var item = result.cameras[i]
+                    if (item != left){
+                        var close = new ROSLIB.ServiceRequest({
+                            name: item
+                        })
+                        camera_close.callService(close, function(result) {})
+                    }
+                }
+            }
+            var open = new ROSLIB.ServiceRequest({
+                name: left
+            })
+            camera_open.callService(open, function(result) {
+                left_open = true
+            })
+        }
+    }) 
+    window.open('http://localhost:8080/stream_viewer?topic=/cameras/left_hand_camera/image&invert=none', '_blank')
+}
+
+function showRightCamClick(event){
+    var right = 'right_hand_camera'
+    var request = new ROSLIB.ServiceRequest({})
+    camera_list.callService(request, function(result) {
+        if(!right_open){
+            if(left_open){
+                var close = new ROSLIB.ServiceRequest({
+                        name: 'head_camera'
+                })
+                camera_close.callService(close, function(result) {head_open = false})
+            }
+            else if(head_open){
+                var close = new ROSLIB.ServiceRequest({
+                        name: 'left_hand_camera'
+                })
+                camera_close.callService(close, function(result) {left_open = false})
+            }
+            else{
+                for (var i = 0, size = result.cameras.length; i < size; i++){
+                    var item = result.cameras[i]
+                    if (item != right){
+                        var close = new ROSLIB.ServiceRequest({
+                            name: item
+                        })
+                        camera_close.callService(close, function(result) {})
+                    }
+                }
+            }
+            var open = new ROSLIB.ServiceRequest({
+                name: right
+            })
+            camera_open.callService(open, function(result) {
+                right_open = true
+            })
+        }
+    }) 
+    window.open('http://localhost:8080/stream_viewer?topic=/cameras/right_hand_camera/image&invert=none', '_blank')
 }
 
 document.getElementById('pause_btn').addEventListener('click',btnClick);
@@ -305,6 +466,9 @@ document.getElementById('reset_robot_btn').addEventListener('click',resetRobotBt
 document.getElementById('disable_sonar_btn').addEventListener('click',disableSonarBtnClick);
 document.getElementById('connect_btn').addEventListener('click',restartConnectClick)
 document.getElementById('kill_robot_btn').addEventListener('click',disableRobotBtnClick)
+document.getElementById('head_cam_btn').addEventListener('click',showHeadCamClick)
+document.getElementById('left_cam_btn').addEventListener('click',showLeftCamClick)
+document.getElementById('right_cam_btn').addEventListener('click',showRightCamClick)
 
 ros = null
 started = false;
