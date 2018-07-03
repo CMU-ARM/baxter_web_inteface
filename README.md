@@ -2,11 +2,13 @@
 ## Dependencies
 ```
 sudo apt-get install ros-kinetic-web-video-server
+sudo apt-get install ros-kinetic-audio-common
 ```
 ## Usage
 To launch the server, run:
 ```
 roslaunch rosbridge_server rosbridge_websocket.launch
+
 ```
 
 For camera functionality, run in another terminal:

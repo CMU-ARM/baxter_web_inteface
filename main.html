@@ -23,29 +23,35 @@
     <li><a href="#2" data-toggle="tab">End Effector State</a></li>
     <li><a href="#3" data-toggle="tab">Joint State</a></li>
     <li><a href="#4" data-toggle="tab">Cameras</a></li>
+    <li><a href="#5" data-toggle="tab">Microphone</a></li>
   </ul>
 
   <div class="tab-content">
     <div class="tab-pane active" id="1">
-    <p>Robot State: <span id="robot-status" class="label label-default">Unknown</span>
-    <br><div style="height: 2px;">Kill Flag: <span id="flag-status" class="label label-default">Unknown</span></div></p>
-    <br>
-      <button class="btn btn-primary" id="enable_robot_btn">Enable Robot</button>
-      <button class="btn btn-primary" id="reset_robot_btn">Reset Robot</button>
-      <button class="btn btn-primary" id="kill_robot_btn">Kill Robot</button>
-    <br>
-    <br>Sonar State: <span id="sonar-status" class="label label-default">Unknown</span><br>
-      <button class="btn btn-primary" id="disable_sonar_btn">Disable</button>
-    <br>
-    <br>Safety Node State: <span id="safety-status" class="label label-default">Unknown</span>
+        <p>Robot State: <span id="robot-status" class="label label-default">Unknown</span>
+        <br><div style="height: 2px;">Kill Flag: <span id="flag-status" class="label label-default">Unknown</span></div></p>
+        <br>
+          <button class="btn btn-primary" id="enable_robot_btn">Enable Robot</button>
+          <button class="btn btn-primary" id="reset_robot_btn">Reset Robot</button>
+          <button class="btn btn-primary" id="kill_robot_btn">Kill Robot</button>
+        <br>
+        <br>Sonar State: <span id="sonar-status" class="label label-default">Unknown</span><br>
+          <button class="btn btn-primary" id="disable_sonar_btn">Disable</button>
+        <br>
+        <br>Safety Node State: <span id="safety-status" class="label label-default">Unknown</span>
     </div>
+    
+    <div class="tab-pane" id="5">
+      <div>
+        Microphone: <span id="mic-status" class="label label-default">Unknown</span><br>
+        <button class="btn btn-primary" id="mic_btn">Microphone Feed</button>
+      </div>
     
     <div class="tab-pane" id="4">
       <div>
         <button class="btn btn-primary" id="head_cam_btn">View Head Camera</button>
         <button class="btn btn-primary" id="left_cam_btn">View Left Hand Camera</button>
         <button class="btn btn-primary" id="right_cam_btn">View Right Hand Camera</button>
-        <img id="pic"></img>
       </div>
     </div>
     
@@ -55,6 +61,7 @@
         </div>
       </div>
     </div>
+    
     <div class="tab-pane" id="2">
       <div class="row">
         <div class="col-md-6">

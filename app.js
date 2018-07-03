@@ -153,6 +153,8 @@ function display_endeffector_info(msg,id){
   }
 }
 
+ip = location.host
+console.log(ip)
 enable_topic = null;
 robot_status = false;
 sonar_status = true;
@@ -160,7 +162,7 @@ sonar_enable_topic = null;
 head_open = false;
 left_open = false;
 right_open = false;
-bool = false;
+mic = false;
 
 
 function initialize(){
@@ -168,6 +170,7 @@ function initialize(){
   document.getElementById('safety-status').innerHTML = 'Disabled';
   document.getElementById('flag-status').className = 'label label-success';
   document.getElementById('flag-status').innerHTML = 'Inactive';
+  document.getElementById('mic-status').innerHTML = 'Inactive';
   
   subscribe_to_topic('/robot/joint_states','sensor_msgs/JointState',function(msg){
     if(!pause){
@@ -248,7 +251,20 @@ function initialize(){
       sonar_status = false
     }
   })
-
+/*  
+   subscribe_to_topic('/audio/audio','audio_common_msgs/AudioData',function(msg){
+    if(mic && msg){
+      document.getElementById('mic-status').className = 'label label-success';
+      document.getElementById('mic-status').innerHTML = 'Listening';
+      document.getElementById('mic_btn').classList.remove("active")
+    }
+    else{
+      document.getElementById('mic-status').className = 'label label-danger';
+      document.getElementById('mic-status').innerHTML = 'Off'; 
+      document.getElementById('mic_btn').classList.add('active')
+    }
+  })
+*/
   sonar_enable_topic = new ROSLIB.Topic({
     ros: ros,
     name: "/robot/sonar/head_sonar/set_sonars_enabled",
@@ -340,6 +356,13 @@ function resetRobotBtnClick(event){
   if(reset_topic){
     reset_topic.publish(msg)
   }
+}
+
+function micBtnClick(event){
+    document.getElementById('mic-status').className = 'label label-success';
+    document.getElementById('mic-status').innerHTML = 'Listening';
+    document.getElementById('mic_btn').classList.remove("active")
+    window.open('http://192.168.0.153:8888/mystream.mp3')
 }
 
 function showHeadCamClick(event){
@@ -469,9 +492,11 @@ document.getElementById('kill_robot_btn').addEventListener('click',disableRobotB
 document.getElementById('head_cam_btn').addEventListener('click',showHeadCamClick)
 document.getElementById('left_cam_btn').addEventListener('click',showLeftCamClick)
 document.getElementById('right_cam_btn').addEventListener('click',showRightCamClick)
+document.getElementById('mic_btn').addEventListener('click',micBtnClick);
 
 ros = null
 started = false;
+
 function restartConnectClick(){
 
   console.log("hello");
@@ -512,7 +537,7 @@ function restartConnectClick(){
 // Connecting to ROS
 // -----------------
 
-var ros_url = 'ws://localhost:9090'
+var ros_url = 'ws://192.168.0.153:9090'
 document.getElementById("ros-url").value = ros_url
 restartConnectClick()
 
