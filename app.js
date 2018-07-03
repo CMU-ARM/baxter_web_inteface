@@ -154,7 +154,6 @@ function display_endeffector_info(msg,id){
 }
 
 ip = location.host
-console.log(ip)
 enable_topic = null;
 robot_status = false;
 sonar_status = true;
@@ -499,7 +498,7 @@ started = false;
 
 function restartConnectClick(){
 
-  console.log("hello");
+  console.log("Starting...");
   if(started){
     document.getElementById("server-status").className = "label label-danger";
     document.getElementById("server-status").innerHTML = "unknown";
@@ -511,7 +510,7 @@ function restartConnectClick(){
   });
 
   ros.on('connection', function() {
-    console.log('Connected to websocket server.');
+    console.log('Connected to websocket server');
     document.getElementById("server-status").className = "label label-success";
     document.getElementById("server-status").innerHTML = "connected";
     initialize();
@@ -523,14 +522,14 @@ function restartConnectClick(){
     document.getElementById("server-status").innerHTML = "failed";
     error_flag = true
   });
-
-  ros.on('close', function() {
+  
+  /*ros.on('close', function() {
     if(!error_flag){
       document.getElementById("server-status").className = "label label-danger";
       document.getElementById("server-status").innerHTML = "Closed";      
     }
     console.log('Connection to websocket server closed.');
-  });
+  });*/
   started = true
 }
 
