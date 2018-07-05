@@ -116,19 +116,6 @@ function round(value, decimals) {
   return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
 
-//https://stackoverflow.com/questions/5451445/how-to-display-image-with-javascript
-function show_image(src, width, height, alt) {
-    node = document.getElementById("pic")
-    var img = new Image(width, height);
-    img.src = src;
-    img.alt = alt;
-
-    while(node.firstChild){
-      node.removeChild(node.firstChild)
-    }
-    node.appendChild(img)
-}
-
 pause = false
 
 function display_endeffector_info(msg,id){
@@ -153,7 +140,8 @@ function display_endeffector_info(msg,id){
   }
 }
 
-ip = location.host
+ip = location.hostname
+console.log(ip)
 enable_topic = null;
 robot_status = false;
 sonar_status = true;
@@ -361,7 +349,7 @@ function micBtnClick(event){
     document.getElementById('mic-status').className = 'label label-success';
     document.getElementById('mic-status').innerHTML = 'Listening';
     document.getElementById('mic_btn').classList.remove("active")
-    window.open('http://192.168.0.153:8888/mystream.mp3')
+    window.open('http://' + ip + ':8000/mystream.mp3')
 }
 
 function showHeadCamClick(event){
@@ -401,7 +389,7 @@ function showHeadCamClick(event){
             })
         }
     }) 
-    window.open('http://localhost:8080/stream_viewer?topic=/cameras/head_camera/image&invert=none', '_blank')
+    window.open('http://' + ip + ':8080/stream_viewer?topic=/cameras/head_camera/image&invert=none', '_blank')
 }
 
 function showLeftCamClick(event){
@@ -440,7 +428,7 @@ function showLeftCamClick(event){
             })
         }
     }) 
-    window.open('http://localhost:8080/stream_viewer?topic=/cameras/left_hand_camera/image&invert=none', '_blank')
+    window.open('http://' + ip + ':8080/stream_viewer?topic=/cameras/left_hand_camera/image&invert=none', '_blank')
 }
 
 function showRightCamClick(event){
@@ -479,7 +467,7 @@ function showRightCamClick(event){
             })
         }
     }) 
-    window.open('http://localhost:8080/stream_viewer?topic=/cameras/right_hand_camera/image&invert=none', '_blank')
+    window.open('http://' + ip + ':8080/stream_viewer?topic=/cameras/right_hand_camera/image&invert=none', '_blank')
 }
 
 document.getElementById('pause_btn').addEventListener('click',btnClick);
@@ -536,7 +524,7 @@ function restartConnectClick(){
 // Connecting to ROS
 // -----------------
 
-var ros_url = 'ws://192.168.0.153:9090'
+var ros_url = 'ws://'+ ip + ':9090'
 document.getElementById("ros-url").value = ros_url
 restartConnectClick()
 
