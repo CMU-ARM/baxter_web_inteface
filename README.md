@@ -2,16 +2,12 @@
 ## Dependencies
 ```
 sudo apt-get install ros-kinetic-web-video-server
+sudo apt-get install darkice
+sudo apt-get install icecast2
 ```
+
 ## Usage
-For camera functionality, first run in another terminal (before below server):
+After setting up darkice and icecast2, to start the web interface, run:
 ```
-rosrun web_video_server web_video_server
+roslaunch baxter_web_inteface interface.launch
 ```
-
-To launch the server, run:
-```
-roslaunch rosbridge_server rosbridge_websocket.launch
-
-```
-You also need to serve the webpage itself through something like ```http-server```
