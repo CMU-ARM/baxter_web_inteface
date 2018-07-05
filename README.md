@@ -1,6 +1,7 @@
 # Baxter Web Interface
 ## Dependencies
 ```
+sudo apt-get install ros-kinetic-rosbridge-suite
 sudo apt-get install ros-kinetic-web-video-server
 sudo apt-get install darkice
 sudo apt-get install icecast2
