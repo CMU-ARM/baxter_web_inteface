@@ -41,7 +41,6 @@ function makeTable(arr_obj){
   table.className = "table"
 
   for(var i = 0; i < arr_obj.length; i++){
-
       cur_row = table.insertRow(i)
       counter = 0;
       for( var key in arr_obj[i]){
@@ -49,8 +48,6 @@ function makeTable(arr_obj){
         node.innerHTML = arr_obj[i][key]
         counter += 1
       }
-      // cur_row.insertCell()
-      // cur_row.insertCell(arr_obj[i]["time"])
   }
 
   if(arr_obj.length >= 1){
@@ -262,12 +259,6 @@ function initialize(){
     name: "/robot/set_super_reset",
     messageType: "std_msgs/Empty"
   })
-  
-  imageTopic = new ROSLIB.Topic({
-    ros : ros,
-    name : '/camera/image/compressed',
-    messageType : 'sensor_msgs/CompressedImage'
-  });
   
   camera_open = new ROSLIB.Service({
     ros: ros,
