@@ -465,11 +465,13 @@ started = false;
 function restartConnectClick(){
 
   console.log("Starting...");
+  
   if(started){
     document.getElementById("server-status").className = "label label-danger";
     document.getElementById("server-status").innerHTML = "unknown";
     ros.close()
   }
+  
   var ros_url = document.getElementById("ros-url").value
   ros = new ROSLIB.Ros({
     url : ros_url
