@@ -15,7 +15,6 @@ os.chdir(rospack.get_path("baxter_web_inteface"))
 IP = socket.gethostbyname(socket.getfqdn())
 PORT = 8081
 URL = IP + ':' + str(PORT)
-#URL = 'localhost:8081'
 
 # Setup simple sever
 Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
