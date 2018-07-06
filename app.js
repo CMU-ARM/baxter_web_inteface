@@ -238,20 +238,7 @@ function initialize(){
       sonar_status = false
     }
   })
-/*  
-   subscribe_to_topic('/audio/audio','audio_common_msgs/AudioData',function(msg){
-    if(mic && msg){
-      document.getElementById('mic-status').className = 'label label-success';
-      document.getElementById('mic-status').innerHTML = 'Listening';
-      document.getElementById('mic_btn').classList.remove("active")
-    }
-    else{
-      document.getElementById('mic-status').className = 'label label-danger';
-      document.getElementById('mic-status').innerHTML = 'Off'; 
-      document.getElementById('mic_btn').classList.add('active')
-    }
-  })
-*/
+
   sonar_enable_topic = new ROSLIB.Topic({
     ros: ros,
     name: "/robot/sonar/head_sonar/set_sonars_enabled",
@@ -511,13 +498,6 @@ function restartConnectClick(){
     error_flag = true
   });
   
-  /*ros.on('close', function() {
-    if(!error_flag){
-      document.getElementById("server-status").className = "label label-danger";
-      document.getElementById("server-status").innerHTML = "Closed";      
-    }
-    console.log('Connection to websocket server closed.');
-  });*/
   started = true
 }
 
@@ -528,38 +508,5 @@ var ros_url = 'ws://'+ ip + ':9090'
 document.getElementById("ros-url").value = ros_url
 restartConnectClick()
 
-// var ros_url = 'ws://192.168.1.50:9090'
-
-// var ros = new ROSLIB.Ros({
-//   //url : 'ws://192.168.1.50:9090'
-//   //url : 'ws://128.2.176.13:9090'
-//   url : ros_url
-// });
-// error_flag = false
-
-
-
-// ros.on('connection', function() {
-//   console.log('Connected to websocket server.');
-//   document.getElementById("server-status").className = "label label-success";
-//   document.getElementById("server-status").innerHTML = "connected";
-//   initialize();
-
-// });
-
-// ros.on('error', function(error) {
-//   console.log('Error connecting to websocket server: ', error);
-//   document.getElementById("server-status").className = "label label-danger";
-//   document.getElementById("server-status").innerHTML = "failed";
-//   error_flag = true
-// });
-
-// ros.on('close', function() {
-//   if(!error_flag){
-//     document.getElementById("server-status").className = "label label-danger";
-//     document.getElementById("server-status").innerHTML = "Closed";      
-//   }
-//   console.log('Connection to websocket server closed.');
-// });
 
 
