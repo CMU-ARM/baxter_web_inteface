@@ -6,7 +6,7 @@ sudo apt-get install ros-<distro>-rosbridge-suite ros-<distro>-web-video-server
 pip install -r requirements.txt
 ```
 
-### Sound and Video
+### Sound
 ```
 sudo apt-get install darkice icecast2
 ```
