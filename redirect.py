@@ -2,7 +2,11 @@
 
 import rospy
 from flask import Flask, request, jsonify
+import logging
 import flask
+
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 app = Flask(__name__)
 
 
