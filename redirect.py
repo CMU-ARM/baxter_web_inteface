@@ -12,8 +12,8 @@ def handle():
     
 @app.route('/interface')
 def redirect():
-    return flask.redirect('http://192.168.0.153:8081/main.html', code=302)    
+    return flask.redirect('http://192.168.0.152:8081/main.html', code=302)    
     
 if __name__ == '__main__':
     port = 9999
-    app.run(host='192.168.0.153', port=port)
+    app.run(host='192.168.0.152', port=port)
